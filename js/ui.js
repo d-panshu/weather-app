@@ -1,31 +1,43 @@
 const result = document.getElementById("result");
+const loader = document.getElementById("loader");
 
-export function showLoading() {
-  result.innerHTML = "<p>Loading...</p>";
+export function showLoader() {
+  loader.classList.remove("hidden");
+  result.innerHTML = "";
+}
+
+export function hideLoader() {
+  loader.classList.add("hidden");
 }
 
 export function showError(message) {
-  result.innerHTML = `<p>${message}</p>`;
+  hideLoader();
+  result.innerHTML = `<p class="error">${message}</p>`;
 }
 
-export function showWeather(data) {
-  const city = data.location.name;
-  const country = data.location.country;
-  const time = data.location.localtime;
+export function showWeather(current, forecast) {
+  hideLoader();
 
-  const temp = data.current.temp_c;
-  const humidity = data.current.humidity;
-  const wind = data.current.wind_kph;
-  const condition = data.current.condition.text;
-  const icon = data.current.condition.icon;
+  const days = forecast.forecast.forecastday;
 
   result.innerHTML = `
-    <h3>${city}, ${country}</h3>
-    <p>${condition}</p>
-    <img src="https:${icon}" alt="${condition}">
-    <p>🌡 ${temp} °C</p>
-    <p>💧 Humidity: ${humidity}%</p>
-    <p>🌬 Wind: ${wind} km/h</p>
-    <small>${time}</small>
+    <h3>${current.location.name}, ${current.location.country}</h3>
+    <p>${current.current.condition.text}</p>
+    <img src="https:${current.current.condition.icon}" />
+
+    <p>🌡 ${current.current.temp_c} °C</p>
+    <p>💧 Humidity: ${current.current.humidity}%</p>
+    <p>🌬 Wind: ${current.current.wind_kph} km/h</p>
+
+    <h4>3-Day Forecast</h4>
+    <div>
+      ${days.map(day => `
+        <div>
+          <strong>${day.date}</strong>
+          <p>${day.day.condition.text}</p>
+          <p>🌡 ${day.day.avgtemp_c} °C</p>
+        </div>
+      `).join("")}
+    </div>
   `;
 }
